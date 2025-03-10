@@ -6,6 +6,7 @@ import AgentGrid from "../components/agent-grid";
 import videos from "@/data/videos-data";
 import CurrentAwards from "../components/community-awards";
 import dynamic from "next/dynamic";
+import CommunityStories from "../components/community-stories";
 
 // Dynamically import heavy components
 const VideoGrid = dynamic(() => import("../components/video-grid"), {
@@ -21,7 +22,8 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <Nav />
       <main>
-        <Hero />
+        {/* <Hero /> */}
+        <CommunityStories />
         <StatsGrid />
         <BountyGrid />
         <CurrentAwards />
