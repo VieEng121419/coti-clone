@@ -3,8 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useScrollHandler, throttle } from "@/utils/scroll-utils";
 import { Users, Building2, Plane } from "lucide-react";
-import Image from "next/image";
-import Bangkok from "./bangkok";
+import dayjs from "dayjs";
 import { fetchEvents } from "../lib/datocms";
 
 export default function StatsGrid() {
@@ -96,14 +95,13 @@ export default function StatsGrid() {
                   </h3>
                   <div className="flex gap-2 items-center">
                     <span className="px-3 py-1 text-sm text-white rounded-full backdrop-blur-sm bg-white/20">
-                      create-a-thon
+                      {dayjs(events[0]?.startDateTime).format("DD/MM/YY")}
                     </span>
                   </div>
                 </div>
                 <div className="flex justify-between items-end">
                   <div className="text-4xl font-bold text-white">
-                    117{" "}
-                    <span className="text-xl font-normal">
+                    <span className="overflow-hidden text-xl font-normal line-clamp-1">
                       {events[0]?.description}
                     </span>
                   </div>
@@ -131,13 +129,7 @@ export default function StatsGrid() {
                     <li className="flex items-center">
                       <Users className="mr-2 w-4 h-4" />
                       <span className="px-2 py-1 mr-2 whitespace-nowrap bg-yellow-300 rounded-full">
-                        {new Date(event.startDateTime).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                          }
-                        )}
+                        {dayjs(event.startDateTime).format("DD/MM/YY")}
                       </span>
                       {event.title}
                     </li>
@@ -157,32 +149,19 @@ export default function StatsGrid() {
           {/* Privacy Network (now Poolz IDO Launch Pad) */}
           {events.slice(1, 5).map((event, index) => (
             <div
-              className={`flex flex-col justify-between p-6 ${bgColors[index]} md:col-span-1 lg:col-span-1`}
+              className={`flex flex-col justify-between p-6 ${bgColors[index]} md:col-span-1 lg:col-span-1 max-h-[240px]`}
             >
-              <h3 className="text-2xl font-bold">{event.title}</h3>
+              <div>
+                <h3 className="text-2xl font-bold">{event.title}</h3>
+                <div className="overflow-hidden mt-2 text-sm line-clamp-3">{event.description}</div>
+              </div>
               <div className="mt-2">
-                <div className="text-lg">{event.description}</div>
-
                 <div className="flex items-center mt-12">
                   <a
                     href="#"
                     className="flex items-center px-4 py-2 text-sm text-black bg-emerald-200 rounded-full transition-colors hover:opacity-80"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="mr-1 w-4 h-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                      />
-                    </svg>
-                    Learn How to Claim
+                    {dayjs(event.startDateTime).format("DD/MM/YYYY")}
                   </a>
                 </div>
               </div>
