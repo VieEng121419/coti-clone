@@ -5,8 +5,10 @@ import { useScrollHandler, throttle } from "@/utils/scroll-utils";
 import { Users, Building2, Plane } from "lucide-react";
 import Image from "next/image";
 import Bangkok from "./bangkok";
+import { fetchEvents } from "../lib/datocms";
 
 export default function StatsGrid() {
+  const [events, setEvents] = useState([]);
   const [count, setCount] = useState(375987);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -33,16 +35,40 @@ export default function StatsGrid() {
     return () => clearInterval(incrementTimer);
   }, [isVisible]);
 
+  useEffect(() => {
+    async function loadEvents() {
+      try {
+        const { events: eventData } = await fetchEvents(6);
+        setEvents(eventData);
+      } catch (error) {
+        console.error("Error loading events:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadEvents();
+  }, []);
+
+  const bgColors = [
+    "bg-emerald-100",
+    "bg-purple-100",
+    "bg-orange-100",
+    "bg-yellow-100",
+    "bg-blue-100",
+    "bg-pink-100",
+  ];
+
   return (
     <section
       id="stats-section"
-      className="w-full py-6 md:py-12 mb-200 pb-200 px-4 bg-black mb-200"
+      className="px-4 py-6 w-full bg-black md:py-12 mb-200 pb-200"
     >
-      <div className="text-center mb-12">
-        <div className="text-6xl md:text-7xl lg:text-8xl font-bold mb-2 text-white">
+      <div className="mb-12 text-center">
+        <div className="mb-2 text-6xl font-bold text-white md:text-7xl lg:text-8xl">
           {count.toLocaleString()}
         </div>
-        <h2 className="text-2xl md:text-3xl font-bold mb-2 text-white">
+        <h2 className="mb-2 text-2xl font-bold text-white md:text-3xl">
           Community Members Building
         </h2>
         <p className=" text-white max-w-[70%] mx-auto text-center mb-12">
@@ -51,32 +77,37 @@ export default function StatsGrid() {
           ensures there are more rewards for the entire COTI community.
         </p>
       </div>
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-0">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4 md:gap-0">
           {/* Dubai Event */}
-          <div className="relative md:col-span-3 lg:col-span-3 h-full bg-black overflow-hidden">
+          <div className="overflow-hidden relative h-full bg-black md:col-span-3 lg:col-span-3">
             <div className="absolute inset-0 w-full h-full">
               <img
-                src="/images/bangkok.JPG"
+                src={events[0]?.avatar?.url}
                 alt="Global COTI Event"
-                className="absolute w-full h-full object-cover object-center"
+                className="object-cover object-center absolute w-full h-full"
               />
             </div>
             <div className="absolute inset-0 bg-black/70">
-              <div className="p-6 h-full flex flex-col justify-between">
+              <div className="flex flex-col justify-between p-6 h-full">
                 <div className="flex justify-between items-start">
-                  <h3 className="text-white text-3xl font-bold">Nirobi</h3>
-                  <div className="flex items-center gap-2">
-                    <span className="bg-white/20 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm">
+                  <h3 className="text-3xl font-bold text-white">
+                    {events[0]?.title}
+                  </h3>
+                  <div className="flex gap-2 items-center">
+                    <span className="px-3 py-1 text-sm text-white rounded-full backdrop-blur-sm bg-white/20">
                       create-a-thon
                     </span>
                   </div>
                 </div>
-                <div className="flex items-end justify-between">
-                  <div className="text-white text-4xl font-bold">
-                    117 <span className="text-xl font-normal">Attended</span>
+                <div className="flex justify-between items-end">
+                  <div className="text-4xl font-bold text-white">
+                    117{" "}
+                    <span className="text-xl font-normal">
+                      {events[0]?.description}
+                    </span>
                   </div>
-                  <div className="flex items-center justify-center bg-white/20 backdrop-blur-sm rounded-full w-8 h-8 text-white">
+                  <div className="flex justify-center items-center w-8 h-8 text-white rounded-full backdrop-blur-sm bg-white/20">
                     <span className="sr-only">View details</span>→
                   </div>
                 </div>
@@ -85,64 +116,38 @@ export default function StatsGrid() {
           </div>
 
           {/* Total Community Events */}
-          <div className="md:col-span-1 lg:col-span-1 bg-purple-200 p-6 flex flex-col h-full">
+          <div className="flex flex-col p-6 h-full bg-purple-200 md:col-span-1 lg:col-span-1">
             <div className="flex-1">
-              <h3 className="text-xl mb-2">
+              <h3 className="mb-2 text-xl">
                 Community Led Events Coming in '25
               </h3>
-              <div className="text-5xl font-bold mb-4">142</div>
-              <h4 className="font-medium mb-2">
+              <div className="mb-4 text-5xl font-bold">142</div>
+              <h4 className="mb-2 font-medium">
                 Upcoming Community IRL Events
               </h4>
               <ul className="space-y-2 text-sm">
-                <li className="flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span className="bg-yellow-300 rounded-full px-2 py-1 mr-2">
-                    10/02/25
-                  </span>
-                  Singapore
-                </li>
-                <li className="flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span className="bg-yellow-300 rounded-full px-2 py-1 mr-2">
-                    19/02/25
-                  </span>
-                  Ho Chi Minh City
-                </li>
-                <li className="flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span className="bg-yellow-300 rounded-full px-2 py-1 mr-2">
-                    26/02/25
-                  </span>
-                  London
-                </li>
-                <li className="flex items-center">
-                  <Users className="w-4 h-4 mr-2" />
-                  <span className="bg-yellow-300 rounded-full px-2 py-1 mr-2">
-                    02/03/25
-                  </span>
-                  Paris, KY
-                </li>
-                <li className="flex items-center">
-                  <Building2 className="w-4 h-4 mr-2" />
-                  <span className="bg-yellow-300 rounded-full px-2 py-1 mr-2">
-                    10/03/25
-                  </span>
-                  Tel Aviv
-                </li>
-                <li className="flex items-center">
-                  <Building2 className="w-4 h-4 mr-2" />
-                  <span className="bg-yellow-300 rounded-full px-2 py-1 mr-2">
-                    18/03/25
-                  </span>
-                  Bangkok
-                </li>
+                {events.length > 0 &&
+                  events.map((event) => (
+                    <li className="flex items-center">
+                      <Users className="mr-2 w-4 h-4" />
+                      <span className="px-2 py-1 mr-2 whitespace-nowrap bg-yellow-300 rounded-full">
+                        {new Date(event.startDateTime).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "short",
+                            day: "numeric",
+                          }
+                        )}
+                      </span>
+                      {event.title}
+                    </li>
+                  ))}
               </ul>
             </div>
             <div className="mt-12">
               <a
                 href="https://chatgpt.com/g/g-675fc4c91c388191ae5a548d1362c55c-post-hoc-grant-helper"
-                className="flex items-center text-black hover:opacity-80 bg-purple-300 rounded-full px-4 py-2 text-sm transition-colors w-fit"
+                className="flex items-center px-4 py-2 text-sm text-black bg-purple-300 rounded-full transition-colors hover:opacity-80 w-fit"
               >
                 View More
               </a>
@@ -150,42 +155,43 @@ export default function StatsGrid() {
           </div>
 
           {/* Privacy Network (now Poolz IDO Launch Pad) */}
-          <div className="md:col-span-1 lg:col-span-1 bg-emerald-100 p-6 flex flex-col justify-between">
-            <h3 className="text-2xl font-bold">Poolz IDO Launch Pad</h3>
-            <div className="mt-2">
-              <div className="text-lg">
-                commits 3% of all launch tokens to community pool.
-              </div>
+          {events.slice(1, 5).map((event, index) => (
+            <div
+              className={`flex flex-col justify-between p-6 ${bgColors[index]} md:col-span-1 lg:col-span-1`}
+            >
+              <h3 className="text-2xl font-bold">{event.title}</h3>
+              <div className="mt-2">
+                <div className="text-lg">{event.description}</div>
 
-              <div className="flex items-center mt-12">
-                <a
-                  href="#"
-                  className="flex items-center text-black hover:opacity-80 bg-emerald-200 rounded-full px-4 py-2 text-sm transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 mr-1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                <div className="flex items-center mt-12">
+                  <a
+                    href="#"
+                    className="flex items-center px-4 py-2 text-sm text-black bg-emerald-200 rounded-full transition-colors hover:opacity-80"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                    />
-                  </svg>
-                  Learn How to Claim
-                </a>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="mr-1 w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                      />
+                    </svg>
+                    Learn How to Claim
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
 
-          {/* Growth */}
-          <div className="md:col-span-1 lg:col-span-1 bg-orange-200 p-6 flex flex-col justify-between">
+          {/* <div className="flex flex-col justify-between p-6 bg-orange-200 md:col-span-1 lg:col-span-1">
             <div>
-              <h3 className="text-sm mb-2">
+              <h3 className="mb-2 text-sm">
                 Growth In Community Deployed Smart Contracts Past 30 Days
               </h3>
               <div className="text-4xl font-bold">
@@ -197,11 +203,11 @@ export default function StatsGrid() {
               <div className="mt-12">
                 <a
                   href="#"
-                  className="flex items-center text-black hover:opacity-80 bg-orange-300 rounded-full px-4 py-2 text-sm transition-colors w-fit"
+                  className="flex items-center px-4 py-2 text-sm text-black bg-orange-300 rounded-full transition-colors hover:opacity-80 w-fit"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 mr-1"
+                    className="mr-1 w-4 h-4"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -219,11 +225,10 @@ export default function StatsGrid() {
             </div>
           </div>
 
-          {/* Active Holders */}
-          <div className="md:col-span-2 lg:col-span-2 bg-yellow-100 p-6 flex flex-col justify-between">
+          <div className="flex flex-col justify-between p-6 bg-yellow-100 md:col-span-2 lg:col-span-2">
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="text-sm mb-2">Frontends Deployed in March</h3>
+                <h3 className="mb-2 text-sm">Frontends Deployed in March</h3>
                 <div className="text-5xl font-bold">258</div>
               </div>
               <div className="text-right">
@@ -234,8 +239,8 @@ export default function StatsGrid() {
                 <div className="text-sm opacity-60">#COTICreatives</div>
               </div>
             </div>
-            <div className="flex justify-end -space-x-2 mt-4">
-              <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative">
+            <div className="flex justify-end mt-4 -space-x-2">
+              <div className="overflow-hidden relative w-10 h-10 rounded-full border-2 border-white">
                 <Image
                   src="/images/person_one.png"
                   alt="Team member 1"
@@ -243,7 +248,7 @@ export default function StatsGrid() {
                   className="object-cover"
                 />
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative">
+              <div className="overflow-hidden relative w-10 h-10 rounded-full border-2 border-white">
                 <Image
                   src="/images/person_two.png"
                   alt="Team member 2"
@@ -251,7 +256,7 @@ export default function StatsGrid() {
                   className="object-cover"
                 />
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative">
+              <div className="overflow-hidden relative w-10 h-10 rounded-full border-2 border-white">
                 <Image
                   src="/images/person_three.png"
                   alt="Team member 3"
@@ -259,7 +264,7 @@ export default function StatsGrid() {
                   className="object-cover"
                 />
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative">
+              <div className="overflow-hidden relative w-10 h-10 rounded-full border-2 border-white">
                 <Image
                   src="/images/person_four.png"
                   alt="Team member 1"
@@ -267,7 +272,7 @@ export default function StatsGrid() {
                   className="object-cover"
                 />
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative">
+              <div className="overflow-hidden relative w-10 h-10 rounded-full border-2 border-white">
                 <Image
                   src="/images/person_five.png"
                   alt="Team member 2"
@@ -275,7 +280,7 @@ export default function StatsGrid() {
                   className="object-cover"
                 />
               </div>
-              <div className="w-10 h-10 rounded-full border-2 border-white overflow-hidden relative">
+              <div className="overflow-hidden relative w-10 h-10 rounded-full border-2 border-white">
                 <Image
                   src="/images/person_six.png"
                   alt="Team member 3"
@@ -284,7 +289,7 @@ export default function StatsGrid() {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </section>
