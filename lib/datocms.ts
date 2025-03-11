@@ -131,3 +131,147 @@ export async function fetchStories(first: number = 4, skip: number = 0) {
     total: data.data._allStoriesMeta.count as number,
   };
 }
+
+
+interface IdeaCategory {
+  id: string;
+  name: string;
+}
+
+interface Idea {
+  id: string;
+  name: string;
+  description: string;
+  category: IdeaCategory;
+  upvote: number;
+  _publishedAt: string;
+}
+
+interface IdeasResponse {
+  data: {
+    allIdeas: Idea[];
+    _allIdeasMeta: {
+      count: number;
+    };
+  };
+}
+
+export async function fetchIdeas(
+  limit: number = 10,
+  skip: number = 0,
+  search: string = "",
+  orderBy: string[] = ["_publishedAt_DESC"]
+): Promise<IdeasResponse> {
+  try {
+    const response = await fetch(DATOCMS_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DATOCMS_TOKEN}`,
+      },
+      body: JSON.stringify({
+        query: `query($limit: IntType, $skip: IntType, $search: String!, $orderBy: [IdeaModelOrderBy!]) {
+          allIdeas(
+            first: $limit,
+            skip: $skip,
+            filter: {name: {matches: {pattern: $search}}},
+            orderBy: $orderBy
+          ) {
+            id
+            name
+            description
+            category {
+              id
+              name
+            }
+            upvote
+            _publishedAt
+          }
+          _allIdeasMeta {
+            count
+          }
+        }`,
+        variables: { limit, skip, search, orderBy }
+      })
+    });
+
+    const { data }: IdeasResponse = await response.json();
+    return { data };
+  } catch (error) {
+    console.error('Error fetching ideas:', error);
+    throw error;
+  }
+}
+
+// Add new function to fetch categories
+export async function fetchCategories() {
+  const response = await fetch(DATOCMS_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': DATOCMS_TOKEN,
+    },
+    body: JSON.stringify({
+      query: "{ allCategories { id name _createdAt _updatedAt } }"
+    })
+  });
+
+  const { data } = await response.json();
+  return data.allCategories;
+}
+
+export async function fetchIdeasByCategory(
+  limit: number = 10,
+  skip: number = 0,
+  search: string = "",
+  categoryId: string = null,
+  orderBy: string[] = ["_publishedAt_DESC"]
+): Promise<IdeasResponse> {
+  try {
+    const response = await fetch(DATOCMS_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${DATOCMS_TOKEN}`,
+      },
+      body: JSON.stringify({
+        query: `query($limit: IntType, $skip: IntType, $search: String!, $categoryId: ItemId, $orderBy: [IdeaModelOrderBy!]) {
+          allIdeas(
+            first: $limit,
+            skip: $skip,
+            filter: {
+              name: {matches: {pattern: $search}},
+              ${categoryId ? 'category: {eq: $categoryId}' : ''}
+            },
+            orderBy: $orderBy
+          ) {
+            id
+            name
+            description
+            category {
+              id
+              name
+            }
+            upvote
+            _publishedAt
+          }
+          _allIdeasMeta(
+            filter: {
+              name: {matches: {pattern: $search}},
+              ${categoryId ? 'category: {eq: $categoryId}' : ''}
+            }
+          ) {
+            count
+          }
+        }`,
+        variables: { limit, skip, search, categoryId, orderBy }
+      })
+    });
+
+    const { data }: IdeasResponse = await response.json();
+    return { data };
+  } catch (error) {
+    console.error('Error fetching ideas:', error);
+    throw error;
+  }
+}

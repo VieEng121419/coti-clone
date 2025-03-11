@@ -77,7 +77,7 @@ export default function CommunityStories() {
       } catch (error) {
         console.error("Error fetching stories:", error);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     }
 

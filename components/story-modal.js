@@ -31,8 +31,8 @@ export default function StoryModal({ story, onClose }) {
   }, [videoUrl, isYouTube]);
 
   return (
-    <div className="flex fixed inset-0 z-50 justify-center items-center p-5 px-4 bg-black bg-opacity-75">
-      <div className="overflow-hidden relative p-8 w-full max-w-4xl bg-white rounded-3xl">
+    <div className="flex fixed inset-0 z-50 justify-center items-center p-5 px-4 bg-black/30 backdrop-blur-sm bg-opacity-75">
+      <div className="overflow-hidden relative p-8 w-full max-w-4xl bg-white">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-50 p-2 text-black hover:opacity-75"

@@ -42,7 +42,7 @@ export default function StatsGrid() {
       } catch (error) {
         console.error("Error loading events:", error);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     }
 

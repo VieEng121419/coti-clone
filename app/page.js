@@ -26,13 +26,13 @@ export default function Home() {
         <CommunityStories />
         <StatsGrid />
         <BountyGrid />
-        <CurrentAwards />
+        {/* <CurrentAwards />
         <VideoGrid
           title="Feburary '25 Posthoc Creator Awards"
           description="The COTI WAGMI Commity found and awarded these COTI creatives who are sharing important content in the wild."
           videos={videos}
         />
-        <AgentGrid />
+        <AgentGrid /> */}
       </main>
     </div>
   );
